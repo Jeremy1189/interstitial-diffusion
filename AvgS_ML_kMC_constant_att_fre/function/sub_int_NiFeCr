@@ -1,0 +1,146 @@
+#!/bin/bash
+#SBATCH -N 1
+#SBATCH --ntasks-per-node=13
+#SBATCH --exclusive
+#SBATCH -p HPC-MNE-HIGH
+#SBATCH --no-requeue
+#SBATCH -A staff
+
+function rand(){
+    min=$1
+    max=$(($2- $min + 1))
+    num=$(date +%s%N)
+    echo $(($num % $max + $min))
+}
+num1=25
+num2=50
+num3=25
+cum_num1_2=`expr $num1 + $num2`
+
+cp per255025 per
+Na=`awk 'NR==2 {print $1}' head0-1`
+Nd=$((${Na}+1))
+rm -f result out* type_set log* tmp* screen* dump*
+####################
+echo "#I1_type1   I1_ID    I2_type2   I2_ID   d1     d2    E1      E2      I3_type3  I3_ID   d3   d4  E3  EBF EBB RDT Poten_initial  Poten_end " >> result
+
+lat_line=5
+a0=`sed -n "${lat_line} p" per |awk '{print $3}'`
+alat=`awk -v a="${a0}" 'BEGIN{print a*10}'` 
+echo "Note lattice constant: $a0"
+sed "s/LLL/$alat/g" head0-1 > head1
+sed "s/LLL/$alat/g" head0-2 > head2
+#migration atom ID
+na=2221
+#new interstial atom ID
+mna=2222;
+NP=13
+awk '{print $2}' per>per_type
+echo > type_set
+#for na in `seq 1000 1500`
+for N in {1..6000}
+do
+echo "Number interaction: $N"
+paste  type_set per_type>temp_type_set
+cat temp_type_set>type_set
+paste per per_type>per_combine
+awk '{print $1,  $6,  $3,  $4,  $5}' per_combine >per-1
+
+# the initial energy of perfect structure
+ cat head1 per-1 > datafile1
+ #lmp_mpi < inp1 > out1
+ mpirun -np $NP lmp_mpi -in inp1 > out1
+ E1=`grep TOTAL out1|awk '{print $4}'`
+
+#
+################## initial energy of interstitial ##################
+# the embeded atom type of I2 is Ni('1')
+rnd=$(rand 1 100)
+if [  `expr $rnd \< $num1` = 1 ];then
+      type1=1
+elif [  `expr $rnd \< $cum_num1_2` = 1 ];then
+      type1=2
+else
+      type1=3
+fi
+echo ${type1}
+  #    grep -v -w "^${na}" per-1 |awk '{print NR, $2, $3, $4, $5}' > tmp2
+grep -v -w "^${na}" per-1  > tmp2
+
+# initial displacement is 1.05, and the dumbell is on the [010] direction
+      #Interstitial1
+      grep -w ^"${na}" per-1 |awk '{print $1, $2, $3, $4+1.05, $5}' >> tmp2
+      #interstitial2
+      grep -w ^"${na}" per-1 |awk -v tt="${type1}" -v N="${Nd}" '{print N, tt, $3, $4-1.05, $5}' >> tmp2
+#print I1 type 
+      grep -w ^"${na}" per-1 |awk '{printf "%-5d", $2}' >> result
+
+# the interstitial formation energy of initial state
+      cat head2 tmp2 > datafile2
+#     lmp_mpi < inp2 > out2
+      mpirun -np $NP lmp_mpi -in inp2 > out2
+      E2=`grep TOTAL out2|awk '{print $4}'`
+      tail -$((${Nd}+9)) dump2.lammpstrj > check2.lammpstrj
+      tail -$((${Nd}+0)) dump2.lammpstrj > config2
+# print the Displacement of two interstitial atom  
+      d1=`grep Displacement out2|awk '{print $2}'`
+      d2=`grep Displacement out2|awk '{print $3}'`  
+      echo -n "$na  $type1  $mna  $d1  $d2   $E1  $E2     " >> result
+###########################End energy of interstitial########################
+ # creat the [100] dumbell with the right position   
+  #Interstitial3   
+       
+       grep -w ^"${mna}" tmp2 >I3
+       l=1
+       x3=`sed -n "$l p" I3|awk '{print $3}'`       
+       y3=`sed -n "$l p" I3|awk '{print $4}'`
+       z3=`sed -n "$l p" I3|awk '{print $5}'`
+       
+       grep -v -w "^${mna}" tmp2 > tmp30
+       grep -w ^"${mna}" tmp2 |awk '{print $1, $2, $3+1.05, $4, $5}' >> tmp30    
+       # modify the coordinates of Interstitial1
+       grep -v -w "^${na}" tmp30 > tmp31
+       grep -w ^"${na}" tmp30 |awk -v x="${x3}" -v y="${y3}" -v z="${z3}" '{print $1, $2, x-1.05, y, z}' >> tmp31
+
+       # modify the coordinates of Interstitial2
+       grep -w ^"${na}" per-1 >I4
+       x4=`sed -n "$l p" I4|awk '{print $3}'`
+       y4=`sed -n "$l p" I4|awk '{print $4}'`
+       z4=`sed -n "$l p" I4|awk '{print $5}'`
+       grep -v -w "^${Nd}" tmp31 > tmp3
+       grep -w ^"${Nd}" tmp31 |awk -v x="${x4}" -v y="${y4}" -v z="${z4}" '{print $1, $2, x, y, z}' >> tmp3
+       
+#print I3 type 
+       grep -w ^"${mna}" tmp3 |awk '{printf "%-5d", $2}' >> result
+
+# the interstitial formation energy of end state
+      cat head2 tmp3 > datafile3
+#     lmp_mpi < inp3 > out3
+      mpirun -np $NP lmp_mpi -in inp3 > out3
+      E3=`grep TOTAL out3|awk '{print $4}'`
+      tail -$((${Nd}+9)) dump3.lammpstrj > check3.lammpstrj
+      tail -$((${Nd}+0)) dump3.lammpstrj > config3
+# print the Displacement of two interstitial atom  
+      d3=`grep Displacement out2|awk '{print $2}'`
+      d4=`grep Displacement out2|awk '{print $3}'`  
+      echo -n "$Nd    $d3    $d4    $E3      " >> result
+s=10
+if [  `expr $d1 \< $s` = 1 ]  && [  `expr $d2 \< $s` = 1 ]  && [  `expr $d3 \< $s` = 1 ] && [  `expr $d4 \< $s` = 1 ];then
+# NEB
+#NEB initial coordinate
+      cat head2 config2 > new_datafile2   
+  #NEB end coordinate
+      awk '{print $1, $3, $4, $5}' config3 > ff
+      sed "1i $Nd" ff > final
+ 
+  # mpirun -np 10 lmp_mpi -p 10x1 -in inp4 > out4
+mpirun -np $NP lmp_mpi -p 13x1 -in inp4 > out4
+tail -1 out4 |awk '{printf "%16.6f %16.6f %16.6f %16.8f %16.8f", $7, $8, $9, $11, $NF}' >> result
+else 
+       echo "0  0  0  0  0" >> result
+fi
+echo >> result
+
+awk '{print $2}' per-1| shuf >per_type
+
+done

@@ -1,0 +1,9 @@
+#!/bin/bash
+#SBATCH -N 1
+#SBATCH --ntasks-per-node=40
+#SBATCH --exclusive
+#SBATCH -p HPC-MNE-HIGH
+#SBATCH --no-requeue
+#SBATCH -A staff
+
+matlab <NiFe_dif_ratio_kMC.m>  out_sbatch
