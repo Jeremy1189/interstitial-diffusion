@@ -30,6 +30,9 @@ The input of the ML model was the local atomic environment(LAE), described by th
 D0_set = [your setting attempt frequency];
 D0 = D0_set(num_ratio);
 ```
-![image](https://github.com/Jeremy1189/interstitial-diffusion/assets/85468234/69117ae2-f907-4c84-8ee6-110ed185548e)
+![image](https://github.com/Jeremy1189/interstitial-diffusion/assets/85468234/e6736047-dd0b-4cf7-9e85-3deaa09febc0)
+
+**AvgS_ML_Inverse_design:"** This folder is used to show how to use the AvgS_ML method to do an inverse design with minimum or maximum sluggish diffusion properties.
+![image](https://github.com/Jeremy1189/interstitial-diffusion/assets/85468234/12f2cb07-83e9-4d6b-8b01-742fba865668)
 
 
