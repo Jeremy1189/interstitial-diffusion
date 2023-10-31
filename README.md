@@ -1,4 +1,4 @@
-![image](https://github.com/Jeremy1189/interstitial-diffusion/assets/85468234/8154e5b6-976c-4472-969f-b6f174321525)# Purpose:
+# Purpose:
 **This code is shared to help understand the methods in the research paper below or potentially apply the methods to explore the mechanism of interstitial sluggish diffusion and chemically-bias diffusion in other CSAs.**
 ***
 ## Research Title: Mechanism of  Sluggish and Chemically-Biased Interstitial Diffusion in Concentrated Solid Solution Alloys: “Barrier Lock” and “Component Dominance” 
