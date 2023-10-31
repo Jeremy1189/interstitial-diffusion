@@ -1,0 +1,10 @@
+#!/bin/bash
+#SBATCH -N 1
+#SBATCH --ntasks-per-node=40
+#SBATCH --exclusive
+#SBATCH -p HPC-MNE-HIGH
+#SBATCH --no-requeue
+#SBATCH -A staff
+
+
+matlab <main_2.m> out1
