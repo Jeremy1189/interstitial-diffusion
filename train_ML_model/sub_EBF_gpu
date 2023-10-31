@@ -1,0 +1,12 @@
+#!/bin/bash
+#SBATCH -N 1
+#SBATCH --job-name=EBF
+#SBATCH --gres=gpu:1
+#SBATCH --ntasks-per-node=40
+#SBATCH -p HPC-MNE-GPU 
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/biaoxu4/software/cuda-11.2/lib64
+export PATH=$PATH:/home/biaoxu4/software/cuda-11.2/bin
+export CUDA_HOME=/home/biaoxu4/software/cuda-11.2
+
+matlab <GPU_train_EBF_model.m> out_EBF_gpu
