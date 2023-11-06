@@ -1,5 +1,5 @@
 # Purpose:
-**This code is shared to help understand the methods in the research paper below or potentially apply the methods to explore the mechanism of interstitial sluggish diffusion and chemically-bias diffusion in other CSAs.**
+**This code is shared to help understand the methods in the research paper below or potentially apply the methods to explore the mechanism of interstitial sluggish diffusion and chemically-bias diffusion in other CSAs. Due to the uploading size limitation of Github(25M for each file), the relative Data updated in a [Intersitial_ML_DATA](https://drive.google.com/drive/folders/1fF8FyzEVGD4qs4nl1DylmuKt2CatFJPB?usp=sharing)**
 ***
 ## Research Title: Sluggish and Chemically-Biased Interstitial Diffusion in Concentrated Solid Solution Alloys: Mechanisms and Methods
 ***
