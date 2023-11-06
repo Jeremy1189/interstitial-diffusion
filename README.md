@@ -1,7 +1,7 @@
 # Purpose:
 **This code is shared to help understand the methods in the research paper below or potentially apply the methods to explore the mechanism of interstitial sluggish diffusion and chemically-bias diffusion in other CSAs.**
 ***
-## Research Title: Mechanism of  Sluggish and Chemically-Biased Interstitial Diffusion in Concentrated Solid Solution Alloys: “Barrier Lock” and “Component Dominance” 
+## Research Title: Sluggish and Chemically-Biased Interstitial Diffusion in Concentrated Solid Solution Alloys: Mechanisms and Methods
 ***
 ### Research Group: J.J. Kai's Group in MNE, CityU
 ### Contact email: biaoxu4@cityu.edu.hk 
